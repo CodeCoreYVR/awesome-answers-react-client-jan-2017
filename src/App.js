@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import QuestionsIndex from './components/QuestionsIndex';
 import QuestionShow from './components/QuestionShow';
+import QuestionNew from './components/QuestionNew';
 import './App.css';
 
 // Step 1: Test that your API backend working correctly with
@@ -34,6 +35,7 @@ class App extends Component {
 
     // don't forget to bind methods used as callbacks ⛓
     this.getQuestion = this.getQuestion.bind(this);
+    this.postQuestion = this.postQuestion.bind(this);
   }
 
   getQuestions () {
@@ -60,6 +62,30 @@ class App extends Component {
     .then(question => this.setState({ question }))
   }
 
+  postQuestion (question) {
+    fetch(
+      `${BASE_URL}/questions?api_key=${API_KEY}`,
+      {
+        // to make a json request with fetch
+        // you have to specify that information the hearders
+        // - the Accept header tells the server what kind of data
+        // we expect in return
+        // - the Content-Type header tells the server what kind of data
+        // we are sending it
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        // JSON.stringify transforms a JavaScript into a JSON formatted
+        // string of text
+        body: JSON.stringify({question})
+      }
+    )
+    .then(() => { this.getQuestions(); })
+    .catch(console.error)
+  }
+
   // componentDidMount is a lifecycle callback that is executed when
   // this component is finally rendered the user's browser
   componentDidMount () {
@@ -72,7 +98,10 @@ class App extends Component {
     if (this.state.question !== null) {
       questionView = (
         <QuestionShow
-          onBackClick={() => this.setState({question: null})}
+          onBackClick={e => {
+            e.preventDefault();
+            this.setState({question: null});
+          }}
           question={this.state.question || {}} />
       );
     } else {
@@ -86,6 +115,7 @@ class App extends Component {
     return (
       <div className="App">
         <h1>Awesome Answers</h1>
+        <QuestionNew onSubmit={this.postQuestion} />
         {/* <ul>
           {
             this.state.questions.map(
