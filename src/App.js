@@ -70,7 +70,11 @@ class App extends Component {
   render() {
     let questionView = '';
     if (this.state.question !== null) {
-      questionView = <QuestionShow question={this.state.question || {}} />;
+      questionView = (
+        <QuestionShow
+          onBackClick={() => this.setState({question: null})}
+          question={this.state.question || {}} />
+      );
     } else {
       questionView = (
         <QuestionsIndex
