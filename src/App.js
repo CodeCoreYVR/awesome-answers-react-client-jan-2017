@@ -31,6 +31,9 @@ class App extends Component {
       question: null,
       questions: []
     }
+
+    // don't forget to bind methods used as callbacks ⛓
+    this.getQuestion = this.getQuestion.bind(this);
   }
 
   getQuestions () {
@@ -61,10 +64,21 @@ class App extends Component {
   // this component is finally rendered the user's browser
   componentDidMount () {
     this.getQuestions();
-    this.getQuestion(78);
+    // this.getQuestion(78);
   }
 
   render() {
+    let questionView = '';
+    if (this.state.question !== null) {
+      questionView = <QuestionShow question={this.state.question || {}} />;
+    } else {
+      questionView = (
+        <QuestionsIndex
+          onQuestionClick={this.getQuestion}
+          questions={this.state.questions} />
+      );
+    }
+
     return (
       <div className="App">
         <h1>Awesome Answers</h1>
@@ -75,8 +89,14 @@ class App extends Component {
             )
           }
         </ul> */}
-        <QuestionShow question={this.state.question || {}} />
-        <QuestionsIndex questions={this.state.questions} />
+        {
+          // { } in JSX can only accept expressions and not statements
+          // (e.g. if, while, for doesn't work)
+          // (this.state.question !== null)
+          // ? <QuestionShow question={this.state.question || {}} />
+          // : <QuestionsIndex questions={this.state.questions} />
+          questionView
+        }
       </div>
     );
   }
